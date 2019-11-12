@@ -1,0 +1,16 @@
+[Unit]
+Description=NodeJS Example Application
+After=network-online.target
+
+[Service]
+Environment=DATABASE_CONNECTION_STRING=mongodb://{{ db_internal_ip }}:27017/example
+Type=simple
+User={{ deploy_user }}
+ExecStart=/usr/bin/node /home/{{ deploy_user }}/app/bin/www
+Restart=on-failure
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=app
+
+[Install]
+WantedBy=multi-user.target  
