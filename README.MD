@@ -23,12 +23,12 @@ Create ssh-key for connecting to the cloud. In this example it is `~/.ssh/gcloud
 HashiCorp Packer automates the creation of our base machine images. There are 2 templates for base images (with NodeJS and MongoDB) in **packer** directory. They do not have provisioners yet, provisioners will be added in next steps.
 **Packer uses `appuser` user to connect via ssh. Make sure you added your ssh-key and have firewall rule for ssh connections.**
 
-To validate templates execute next command
+To validate templates execute next commands
 ```
 packer validate -var "project_id=<your_gcp_project_id>" packer/nodejs-base.json
 packer validate -var "project_id=<your_gcp_project_id>" packer/mongodb-base.json
 ```
-To build images from templates execute next command
+To build images from templates execute next commands
 ```
 packer build -var "project_id=<your_gcp_project_id>" packer/nodejs-base.json
 packer build -var "project_id=<your_gcp_project_id>" packer/mongodb-base.json
@@ -44,3 +44,24 @@ terraform init
 terraform apply
 ```
 Terraform creates bucket (example name is `infra-nodejs-mongodb-89p13-terraform-state`) where we will keep our main terraform configuration state.
+
+In **terraform/modules** directory we have next modules:
+* **app** - module that creates app instance from Packer **nodejs-base** image, reserve IP address and creates firewall rules that allow connections to 80 and 3000 ports
+* **db** - module that creates db instance from Packer **mongodb-base** image and creates firewall rule that allow connections from app instance to 27017 port
+* **vpc** - module that creates firewall rule that allow SSH conections to app and db instances
+
+In **terraform/stage** and In **terraform/prod** directory directory we have configuration for environments. Differences between them are allowed IP address for SSH connections (for prod it is only address from `my_ip` variable that is allowed)  and env prefix.
+
+ Replace **terraform.tfvars.example** file with **terraform.tfvars** with real variables.
+ 
+ To run stage environment change directory to **terraform/stage** and execute next commands
+ ```
+terraform init
+terraform apply
+ ```
+Same for prod environment, but directory is **terraform/prod**.
+
+You can see external IP addresses of host in output by executing next command
+```
+terraform output
+```
