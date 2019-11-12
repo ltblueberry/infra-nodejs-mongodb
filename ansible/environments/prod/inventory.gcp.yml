@@ -4,9 +4,9 @@ projects:
 service_account_file: ~/.gcp/service-account.json
 auth_kind: serviceaccount
 zones:
-  - "europe-west4-b"
+  - "europe-west3-b"
 filters:
-  - name = "stage-app" OR name = "stage-db" 
+  - name = "prod-app" OR name = "prod-db" 
 scopes:
   - 'https://www.googleapis.com/auth/compute.readonly'
 groups:
