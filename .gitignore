@@ -28,3 +28,5 @@ Temporary Items
 *.tfstate.backup
 *.tfvars
 terraform/backend-bucket/.terraform/
+terraform/stage/.terraform/
+terraform/prod/.terraform/

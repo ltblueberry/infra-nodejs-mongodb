@@ -1,7 +1,7 @@
 resource "google_compute_firewall" "firewall_ssh" {
-  name        = "default-allow-ssh"
+  name        = "default-allow-ssh-${var.env_name}"
   network     = "default"
-  description = "Allow SSH from anywhere"
+  description = "Allow SSH for ${var.env_name} environment"
 
   allow {
     protocol = "tcp"
@@ -9,4 +9,5 @@ resource "google_compute_firewall" "firewall_ssh" {
   }
 
   source_ranges = "${var.source_ranges}"
+  target_tags   = ["${var.env_name}-${var.app_tag}", "${var.env_name}-${var.db_tag}"]
 }
