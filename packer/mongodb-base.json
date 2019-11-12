@@ -23,5 +23,11 @@
         "ssh_username": "appuser",
         "disk_type": "{{user `disk_type`}}",
         "disk_size": "{{user `disk_size`}}"
+    }],
+    "provisioners": [{
+        "type": "ansible",
+        "playbook_file": "ansible/playbooks/packer_mongodb.yml",
+        "extra_arguments": ["--tags", "install"],
+        "ansible_env_vars": ["ANSIBLE_ROLES_PATH={{ pwd }}/ansible/roles"]
     }]
 }
