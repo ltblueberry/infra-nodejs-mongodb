@@ -8,7 +8,7 @@ provider "google" {
 terraform {
   backend "gcs" {
     bucket = "infra-nodejs-mongodb-89p13-terraform-state"
-    prefix = "staging"
+    prefix = "production"
   }
 }
 
@@ -33,10 +33,10 @@ module "db" {
   db_tag          = "${var.db_tag}"
 }
 
-# Firewall rule - open SSH for all ranges
+# Firewall rule - open SSH only for my IP address
 module "vpc" {
   source        = "../modules/vpc"
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = ["${var.my_ip}"]
   env_name      = "${var.env_name}"
   app_tag       = "${var.app_tag}"
   db_tag        = "${var.db_tag}"
