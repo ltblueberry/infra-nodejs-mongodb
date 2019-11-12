@@ -1,0 +1,2 @@
+db_internal_ip: "{{ hostvars['stage-db']['networkInterfaces'][0]['networkIP'] }}"
+deploy_user: appuser
