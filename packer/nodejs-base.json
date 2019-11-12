@@ -1,0 +1,27 @@
+{
+    "variables": {
+        "project_id": null,
+        "zone": "europe-west4-b",
+        "image_description": "Ubuntu 16.04 with NodeJS 13.x",
+        "machine_type": "f1-micro",
+        "image_family": "nodejs-base",
+        "source_image_family": "ubuntu-1604-lts",
+        "network": "default",
+        "disk_type": "pd-standard",
+        "disk_size": "10"
+    },
+    "builders": [{
+        "type": "googlecompute",
+        "project_id": "{{user `project_id`}}",
+        "zone": "{{user `zone`}}",
+        "image_description": "{{user `image_description`}}",
+        "machine_type": "{{user `machine_type`}}",
+        "image_name": "{{user `image_family`}}-{{isotime `20060102-150405`}}",
+        "image_family": "{{user `image_family`}}",
+        "source_image_family": "{{user `source_image_family`}}",
+        "network": "{{user `network`}}",
+        "ssh_username": "appuser",
+        "disk_type": "{{user `disk_type`}}",
+        "disk_size": "{{user `disk_size`}}"
+    }]
+}
