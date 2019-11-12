@@ -21,3 +21,12 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Terraform
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+terraform/backend-bucket/.terraform/
+terraform/stage/.terraform/
+terraform/prod/.terraform/
