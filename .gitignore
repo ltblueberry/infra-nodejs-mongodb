@@ -30,3 +30,7 @@ Temporary Items
 terraform/backend-bucket/.terraform/
 terraform/stage/.terraform/
 terraform/prod/.terraform/
+
+# Ansible
+*.retry
+nginxinc.nginx
