@@ -1,0 +1,21 @@
+---
+- name: Deploy application
+  hosts: app
+  tasks:
+    - name: Fetch the latest version of application code
+      git:
+        repo: https://github.com/ltblueberry/dummy-node-mongo.git
+        dest: /home/{{ deploy_user }}/app
+        version: master
+
+    - name: Install packages based on package.json.
+      npm:
+        path: /home/{{ deploy_user }}/app
+      notify: restart app
+
+  handlers:
+  - name: restart app
+    become: true
+    systemd: 
+      name: app
+      state: restarted

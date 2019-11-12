@@ -1,0 +1,23 @@
+- name: Configure application
+  hosts: app
+  become: true
+  vars:
+    nginx_http_template_enable: true
+    nginx_http_template:
+      default:
+        template_file: http/default.conf.j2
+        conf_file_name: default.conf
+        conf_file_location: /etc/nginx/conf.d/
+        port: 80
+        server_name: app
+        error_page: /usr/share/nginx/html
+        autoindex: false
+        reverse_proxy:
+          locations:
+            backend:
+              location: /
+              proxy_pass: http://127.0.0.1:3000
+  
+  roles:
+    - app
+    - nginxinc.nginx

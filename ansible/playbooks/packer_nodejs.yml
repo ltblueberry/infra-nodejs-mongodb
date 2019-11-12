@@ -1,0 +1,7 @@
+---
+- name: Install NodeJS 13.x
+  hosts: all
+  become: true
+  
+  roles:
+    - app
