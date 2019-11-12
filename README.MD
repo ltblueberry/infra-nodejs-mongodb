@@ -14,6 +14,7 @@ It has next endpoints:
 * [Packer](https://www.packer.io) (version 1.4.5)
 * [Terraform](https://www.terraform.io) (version 0.11.14)
 * [Ansible](https://www.ansible.com) (version 2.9.0)
+* VirtualBox and [Vagrant](https://www.vagrantup.com)
 
 # gcloud
 Our infrastucture will be located in [Google Cloud Platform](https://cloud.google.com). To automate infrastructure configuration we need to install [**gcloud**](https://cloud.google.com/sdk/docs/downloads-versioned-archives) cli, so we can provide other tools access to our cloud. [Authorize with gcloud cli](https://cloud.google.com/sdk/gcloud/reference/auth/). Also make service key in json format (*GCP Console -> IAM -> Service Accounts -> Select account -> Create Key -> JSON*), it will be used in next steps.
@@ -22,7 +23,9 @@ Our infrastucture will be located in [Google Cloud Platform](https://cloud.googl
 Create ssh-key for connecting to the cloud. In this example it is `~/.ssh/gcloud_rsa`. Add it to *GCP Console -> Compute Engine -> Metadata* for `appuser` user.
 
 # Packer
-HashiCorp Packer automates the creation of our base machine images. There are 2 templates for base images (with NodeJS and MongoDB) in **packer** directory. They do not have provisioners yet, provisioners will be added in next steps.
+HashiCorp Packer automates the creation of our base machine images. There are 2 templates for base images (with NodeJS and MongoDB) in **packer** directory. 
+They have ansible provisioners with **ansible/playbooks/packer_mongodb.yml** and **ansible/playbooks/packer_nodejs.yml** playbooks and apply tasks with **install** tag only.
+
 **Packer uses `appuser` user to connect via ssh. Make sure you added your ssh-key and have firewall rule for ssh connections.**
 
 To validate templates execute next commands
@@ -78,4 +81,86 @@ pip install -r requirements.txt
 
 **ansible.cfg** is configuration file for ansible in project
 
+There are two dynamic inventories for stage and prod in **environments** directory. **Replace `your_gcp_project_id `, `service_account_file` with your real values before start.**
 
+Install inventory requirements with next command
+```
+ansible-galaxy install -r environments/stage/requirements.yml
+ansible-galaxy install -r environments/prod/requirements.yml
+```
+*if you have error with ansible-galaxy certificate verify failed execute next command*
+```
+# flag -c ignore certs errors
+ansible-galaxy install -r environments/stage/requirements.yml -c
+ansible-galaxy install -r environments/prod/requirements.yml -c
+```
+
+There are next playbooks in **playbooks** directory:
+* **base.yml** - Installs Python for Ansible
+* **app.yml** - Run **app** and **nginxinc.nginx** roles at app hosts
+* **db.yml** - Run **db** role at db hosts
+* **deploy.yml** - Deploy application code, install dependencies and restart service
+* **packer_mongodb.yml** - Used in Packer provisioner for mongodb image
+* **packer_nodejs.yml** - Used in Packer provisioner for nodejs image
+* **site.yml** - Configure app and db, deploy application and launch it
+
+There are next roles in **roles** directory:
+* **app** - Install NodeJS and configure systemd app.service for application
+* **db** - Install MongoDB and configure it to listen 27017 port not only for localhost
+* **nginxinc.nginx** - Installed via Ansible-Galaxy. It's official role from nginx. 
+
+**Stage environment**
+It is the default environment in **ansible.cfg** file, so just execute next command without specified inventory
+```
+# Run playbook in dry-run mode
+ansible-playbook playbooks/site.yml --check
+
+# Execute playbook
+ansible-playbook playbooks/site.yml
+```
+
+**Prod environment**
+```
+# Run playbook in dry-run mode
+ansible-playbook -i environments/prod/inventory.gcp.yml playbooks/site.yml --check
+
+# Execute playbook
+ansible-playbook -i environments/prod/inventory.gcp.yml playbooks/site.yml
+```
+
+**Vagrantfile** - vagrant config for two virtual box instances with ansible provisioners to test **site.yml** playbook localy.
+Launch vagrant instances with next command
+```
+vagrant up
+
+# You can ssh to vagrant instance
+vagrant ssh appserver
+vagrant ssh dbserver
+```
+Check application at **10.10.10.20** in browser. Check **10.10.10.20/elements**.
+
+Destory vagrant instances with next command
+```
+vagrant destroy
+```
+
+Role **db** has molecule tests. Change directory to **roles/db**.
+To create test instance execute next command
+```
+molecule create
+
+# List test instances
+molecule list
+```
+To run playbook at test instance execute next command
+```
+molecule converge
+```
+To run test execute next command
+```
+molecule verify
+```
+To destroy test instance execute next coomand
+```
+molecule destroy
+```
