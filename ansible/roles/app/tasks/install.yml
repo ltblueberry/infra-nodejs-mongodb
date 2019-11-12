@@ -1,0 +1,22 @@
+---
+- name: Install the gpg key for NodeJS LTS
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
+  tags:
+    - install
+
+- name: Install the NodeJS LTS repos
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_13.x xenial main"
+    state: present
+    update_cache: yes
+  tags:
+    - install
+
+- name: Install NodeJS package
+  apt:
+    name: nodejs
+    state: present
+  tags:
+    - install

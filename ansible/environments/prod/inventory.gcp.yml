@@ -1,0 +1,18 @@
+plugin: gcp_compute
+projects:
+  - your_gcp_project_id 
+service_account_file: ~/.gcp/service-account.json
+auth_kind: serviceaccount
+zones:
+  - "europe-west3-b"
+filters:
+  - name = "prod-app" OR name = "prod-db" 
+scopes:
+  - 'https://www.googleapis.com/auth/compute.readonly'
+groups:
+  app: "'app' in name"
+  db: "'db' in name"
+hostnames:
+  - name
+compose:
+  ansible_host: networkInterfaces[0].accessConfigs[0].natIP
