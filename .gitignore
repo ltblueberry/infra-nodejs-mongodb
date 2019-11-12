@@ -34,3 +34,11 @@ terraform/prod/.terraform/
 # Ansible
 *.retry
 nginxinc.nginx
+
+# Vagrant & molecule
+.vagrant/
+*.log
+*.pyc
+.molecule
+.cache
+.pytest_cache
