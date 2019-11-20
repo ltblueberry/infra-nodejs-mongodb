@@ -164,3 +164,9 @@ To destroy test instance execute next coomand
 ```
 molecule destroy
 ```
+
+## License
+
+**[MIT License](LICENSE)**
+
+Copyright (c) 2019 [ltblueberry](https://github.com/ltblueberry)
